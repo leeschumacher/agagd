@@ -27,7 +27,7 @@ except ValueError:
     quit()
 
 members = []
-for member_id in range(member_count):
+for member_id in range(1, member_count+1):  # AutoField doesn't like 0.
     first_name = random.choice(GIVEN_NAMES)
     last_name = random.choice(LAST_NAMES)
     members.append({
@@ -71,7 +71,7 @@ for tourney_id in range(tourney_count):
     })
 
 games = []
-for game_id in range(game_count):
+for game_id in range(1, game_count+1):
     p1 = random.choice(members)['pk']
     p2 = random.choice(filter(lambda m: m['pk'] != p1, members))['pk']
     date = dt.date.today() - dt.timedelta(days = random.randint(2,20))
@@ -102,10 +102,10 @@ for game_id in range(game_count):
 chapters = [] 
 for i, chap_code in enumerate(CHAPTER_CODES):
     chapters.append({
-        'pk': i,
+        'pk': i+1,
         'model': 'agagd_core.chapters',
         'fields': {
-            'member_id': i,
+            'member_id': i+1,
             'code': chap_code,
             'name': random.choice(['Firefly Go Club', 'NBA Go Club', 'some other club']),
             'contact_text': random.choice(['Some contact info would go here.', '']),
