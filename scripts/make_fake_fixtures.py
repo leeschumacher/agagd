@@ -1,15 +1,19 @@
+#!/usr/bin/env python
+
 # A simple script to generate fake data
 import sys, random, json
 
-USAGE = 'Usage: python make_fake_fixtures.py [num_of_members] [num_of_games] [num_of_tournaments]'
+USAGE = 'Usage: python make_fake_fixtures.py [num_of_members] ' \
+        '[num_of_games] [num_of_tournaments] [num_of_ratings]'
 GIVEN_NAMES = [ 'bruce', 'malcolm', 'kobe', 'peter', 'kaylee', 'inara', ]
 LAST_NAMES = [ 'lee', 'reynolds', 'bryant', 'parker', 'frye', 'serra', ]
 CHAPTER_CODES = ['FFLY', 'NBAG', 'DEAD', 'BEEF']
-COUNTRY_CODES = ['USA', 'CAN', 'JPN', 'KOR', 'CHN', 'TWN'] #these, oddly, are not the FK in the member table.
-COUNTRY_NAMES = ['An awesome country', 'A cool country', 'Canada', 'United States of Awesome', 'Donnybrookistan']
+COUNTRY_CODES = ['US', 'CA', 'JP', 'KR', 'CN', 'TW'] #these, oddly, are not the FK in the member table.
+COUNTRY_NAMES = ['An awesome country', 'A cool country', 'Canada',
+                 'United States of Awesome', 'Donnybrookistan']
 import datetime as dt
 
-if len(sys.argv) != 4:
+if len(sys.argv) != 5:
     print USAGE
     quit()
 
@@ -17,6 +21,7 @@ try:
     member_count = int(sys.argv[1])
     game_count = int(sys.argv[2])
     tourney_count = int(sys.argv[3])
+    ratings_count = int(sys.argv[4])
 except ValueError:
     print USAGE
     quit()
@@ -121,4 +126,22 @@ for i, count_name in enumerate(COUNTRY_NAMES):
         }
     }) 
 
-print json.dumps(members + tournaments + games + chapters + countries, indent=4)
+
+ratings = []
+for i in range(ratings_count):
+    p1 = random.choice(members)['pk']
+    date = dt.date.today() - dt.timedelta(days = random.randint(2,200))
+    ratings.append({
+        'model': 'agagd_core.rating',
+        'pk' : i+1,
+        'fields' : {
+            'pin_player':  p1,
+            'tournament': random.choice(tournaments)['pk'],
+            'rating' : round(random.random() * 10 - 5, 3),
+            'sigma' : round(random.random() - 0.5, 3),
+            'elab_date' : date.strftime("%Y-%m-%d"),
+        }
+    })
+
+print json.dumps(members + tournaments + games + chapters + countries + ratings,
+                 indent=4)
